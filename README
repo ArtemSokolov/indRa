@@ -1,0 +1,6 @@
+virtualenv -p python3 venv
+source venv/bin/activate
+pip install indra
+pip uninstall -y enum34
+deactivate
+

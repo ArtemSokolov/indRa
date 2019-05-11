@@ -1,0 +1,9 @@
+Package: indRa
+Title: R bindings to indra.bio
+Version: 0.1
+Author: Artem Sokolov
+Description: Bringing INDRA functionality into an R environment
+License: MIT
+Depends: R (>= 3.1.0)
+Imports:
+    reticulate
