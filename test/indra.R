@@ -6,14 +6,13 @@ indra <- import("indra")
 idr <- indra$sources$indra_db_rest
 hgnc <- indra$databases$hgnc_client
 
-## Retrieves the set of Source - Target links for a given source
+## Given an INDRA DB REST query object, retrieves the set of Source-Target links
 ## Returns type and evidence count for each link
-getEdges <- function( subj_query )
+getEdges <- function( indra_query )
 {
-    v <- idr$get_statements( subject=subj_query, best_first=TRUE, ev_limit=1L )
-    s <- v$statements
+    s <- indra_query$statements
 
-    nev <- map_int( s, v$get_ev_count )
+    nev <- map_int( s, indra_query$get_ev_count )
     cls <- map_chr( s, ~class(.x)[1] ) %>% str_split( "\\." ) %>% map_chr( 4 )
 
     ag <- map( s, ~.x$agent_list() )
@@ -27,3 +26,10 @@ getEdges <- function( subj_query )
         mutate_at( c("Src","Trgt"), map_chr, hgnc$get_hgnc_name )
 }
 
+
+main <- function()
+{
+    f <- function(s) idr$get_statements( subject=s, best_first=TRUE, ev_limit=1L )
+    iqq <- c("JAK2", "SIK3", "MET") %>% set_names() %>% map(f)
+    XX <- map( iqq, getEdges )
+}
