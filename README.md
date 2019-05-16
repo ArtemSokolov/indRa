@@ -25,11 +25,11 @@ library( indRa )
 use_virtualenv( "/path/to/virtual/env", required=TRUE )
 
 ## Access to INDRA is available through global variable indra
-indra
+indra()
 # Module(indra)
 
 ## Reading a sentence with TRIPS
-trips <- indra$sources$trips
+trips <- indra()$sources$trips
 sentence <- 'MAP2K1 phosphorylates MAPK3 at Thr-202 and Tyr-204'
 trips_processor <- trips$process_text( sentence )
 trips_processor$statements
