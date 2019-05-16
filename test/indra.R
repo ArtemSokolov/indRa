@@ -4,16 +4,28 @@ library( reticulate )
 ## Load relevant Python modules
 use_virtualenv("./venv", TRUE)
 indra <- import("indra")
-idr <- indra$sources$indra_db_rest
-hgnc <- indra$databases$hgnc_client
+
+wrangle_beliefs <- function()
+{
+    pybi <- import_builtins()
+    pkl <- import("pickle", convert=FALSE)
+    p <- pkl$load( pybi$open( "data/belief_dict_20190428.pkl", "rb" ) )
+    indra_belief_dict <- unlist(p)
+    ## save( indra_belief_dict, "file.RData" )
+}
 
 ## Given an INDRA DB REST query object, retrieves the set of Source-Target links
 ## Returns type and evidence count for each link
 getEdges <- function( indra_query )
 {
+    hgnc <- indra$databases$hgnc_client
+    
     ## Identify the statements returned by the query
     s <- indra_query$statements
 
+    ## Retrieve the hash of each statement
+    h <- map( s, r_to_py, convert=FALSE ) %>% map( ~.x$get_hash() ) %>% map_chr( as.character )
+    
     ## Retrieve the type and strength of each statement
     nev <- map_int( s, indra_query$get_ev_count )
     cls <- map_chr( s, ~class(.x)[1] ) %>% str_split( "\\." ) %>% map_chr( 4 )
@@ -24,12 +36,9 @@ getEdges <- function( indra_query )
     ag2 <- map( ag, pluck, 2, "db_refs", "HGNC" )
 
     ## Put everything into a common data frame
-    ## Combine duplicate (Type, Src, Trgt) triplets by summing evidence counts
-    ## Make HGNC IDs to gene symbols
-    tibble( EvCnt = nev, Activity = cls, Src = ag1, Trgt = ag2 ) %>%
+    ## Convert HGNC IDs to gene symbols
+    tibble( Hash = h, Activity = cls, Src = ag1, Trgt = ag2, EvCnt = nev ) %>%
         filter( !map_lgl(Trgt, is.null) ) %>% unnest() %>%
-        group_by( Activity, Src, Trgt ) %>% summarize_at( "EvCnt", sum ) %>%
-        arrange( desc(EvCnt) ) %>% ungroup() %>%
         mutate_at( c("Src","Trgt"), map_chr, hgnc$get_hgnc_name )
 }
 
@@ -37,24 +46,17 @@ getEdges <- function( indra_query )
 ## Passes the result through getEdges
 IDBquery <- function( ... )
 {
+    idr <- indra$sources$indra_db_rest
     f <- partial( idr$get_statements, best_first=TRUE, ev_limit=1L )
     f(...) %>% getEdges()
 }
 
-main <- function()
+main1 <- function()
 {
     ## Retrieve all edges for the three drug targets of interest
     IQ <- c("JAK2", "SIK3", "MET") %>% set_names() %>% map( IDBquery )
 
-    ## Drop all links with evidence count below 2
-    IQ <- map( IQ, filter, EvCnt > 1 )
-
-    ## Identify common targets
-    L <- bind_rows(IQ) %>% spread( Src, EvCnt )
-
-    ## Targets common to JAK2 and MET, and those that differ
-    L1 <- select( L, -SIK3 )
-    L1 %>% na.omit() %>% arrange( desc(MET) )
-    L1 %>% filter( is.na(MET), !is.na(JAK2) ) %>% arrange( desc(JAK2) )
-    L1 %>% filter( !is.na(MET), is.na(JAK2) ) %>% arrange( desc(MET) )
+    ## Put everything into a common dataframe
+    L <- bind_rows(IQ) %>% group_by( Activity, Src, Trgt ) %>%
+        summarize_at( "EvCnt", sum ) %>% ungroup() %>% spread( Src, EvCnt )
 }
