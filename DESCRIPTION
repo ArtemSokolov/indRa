@@ -6,5 +6,6 @@ Description: Bringing INDRA functionality into an R environment
 License: MIT
 Depends: R (>= 3.1.0)
 Imports:
+    tidyverse,
     reticulate
 RoxygenNote: 6.1.1
