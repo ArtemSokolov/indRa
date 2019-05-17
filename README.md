@@ -24,7 +24,7 @@ library( indRa )
 ## If using virtualenv
 use_virtualenv( "/path/to/virtual/env", required=TRUE )
 
-## Access to INDRA is available through global variable indra
+## Access to INDRA is available through indra() function
 indra()
 # Module(indra)
 
