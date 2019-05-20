@@ -44,6 +44,10 @@ trips_processor$statements
 # 
 # [[2]]
 # Phosphorylation(MAP2K1(), MAPK3(), Y, 204)
+
+## Extraneous output can be toggled through Python logging
+pyLogging <- reticulate::import( "logging" )
+indra()$logger$setLevel( pyLogging$WARNING )
 ```
 
 ## Building interaction networks
