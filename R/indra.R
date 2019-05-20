@@ -29,13 +29,14 @@ queryEdges <- function( indra_query )
 
     ## Retrieve HGNC IDs of the subject and object in each statement
     ag <- purrr::map( s, ~.x$agent_list() )
-    ag1 <- purrr::map_chr( ag, purrr::pluck, 1, "db_refs", "HGNC" )
+    ag1 <- purrr::map( ag, purrr::pluck, 1, "db_refs", "HGNC" )
     ag2 <- purrr::map( ag, purrr::pluck, 2, "db_refs", "HGNC" )
 
     ## Put everything into a common data frame
     ## Convert HGNC IDs to gene symbols
     tibble::tibble( Hash = h, Activity = cls, Src = ag1, Trgt = ag2, EvCnt = nev ) %>%
-        dplyr::filter( !purrr::map_lgl(Trgt, is.null) ) %>% tidyr::unnest() %>%
+        dplyr::filter( !purrr::map_lgl(Src, is.null), !purrr::map_lgl(Trgt, is.null) ) %>%
+            tidyr::unnest() %>%
             dplyr::mutate_at( c("Src","Trgt"), purrr::map_chr, hgnc$get_hgnc_name )
 }
 
