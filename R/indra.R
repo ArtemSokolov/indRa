@@ -14,30 +14,38 @@ indra <- function() {pyIndra}
 queryEdges <- function( indra_query )
 {
     hgnc <- pyIndra$databases$hgnc_client
-    
-    ## Identify the statements returned by the query
-    s <- indra_query$statements
+    iq <- reticulate::r_to_py( indra_query )
 
-    ## Retrieve the hash of each statement
-    h <- purrr::map( s, reticulate::r_to_py, convert=FALSE ) %>%
-        purrr::map( ~.x$get_hash() ) %>% purrr::map_chr( as.character )
+    ## Retrieves HGNC ID of the i^th agent in statement s
+    agentHGNC <- function( s, i )
+    {
+        ## Python indexing is 0-based
+        ag <- s$agent_list()[i-1]
+        if( ag == reticulate::r_to_py(NULL) ) return(NULL)
+        reticulate::py_to_r( ag$db_refs["HGNC"] )
+    }
     
-    ## Retrieve the type and strength of each statement
-    nev <- purrr::map_int( s, indra_query$get_ev_count )
-    cls <- purrr::map_chr( s, ~class(.x)[1] ) %>%
-        stringr::str_split( "\\." ) %>% purrr::map_chr( 4 )
+    ## Retrieves information for the i^th statements in a query
+    ithStatement <- function( i )
+    {
+        s <- iq$statements[i-1]	# Python indexing is 0-based
+        list(
+            Hash = as.character(s$get_hash()),
+            Activity = stringr::str_split( class(s)[1], "\\." )[[1]][4],
+            EvCnt = reticulate::py_to_r( iq$get_ev_count(s) ),
+            Src = agentHGNC(s, 1), Trgt = agentHGNC(s, 2)
+        )
+    }
 
-    ## Retrieve HGNC IDs of the subject and object in each statement
-    ag <- purrr::map( s, ~.x$agent_list() )
-    ag1 <- purrr::map( ag, purrr::pluck, 1, "db_refs", "HGNC" )
-    ag2 <- purrr::map( ag, purrr::pluck, 2, "db_refs", "HGNC" )
+    ## Parse statements returned by the query
+    ## Remove statements that didn't map to HUGO
+    ss <- purrr::map( 1:length(iq$statements), ithStatement ) %>%
+        purrr::discard( with, is.null(Trgt) | is.null(Src) )
 
     ## Put everything into a common data frame
     ## Convert HGNC IDs to gene symbols
-    tibble::tibble( Hash = h, Activity = cls, Src = ag1, Trgt = ag2, EvCnt = nev ) %>%
-        dplyr::filter( !purrr::map_lgl(Src, is.null), !purrr::map_lgl(Trgt, is.null) ) %>%
-            tidyr::unnest() %>%
-            dplyr::mutate_at( c("Src","Trgt"), purrr::map_chr, hgnc$get_hgnc_name )
+    dplyr::bind_rows(ss) %>%
+        dplyr::mutate_at( c("Src","Trgt"), purrr::map_chr, hgnc$get_hgnc_name )
 }
 
 #' INDRA DB REST query
