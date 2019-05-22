@@ -48,12 +48,13 @@ path_join <- function(P1, P2)
 #' @param src Source gene
 #' @param trgts Vector of target genes
 #' @param fscore Scoring function that accepts a vector of evidence counts
+#' @param blacklist Vector of genes that should NOT be expanded
 #' @param max_nodes Maximum number of nodes to expand (Default: 100)
 #' @param min_ev Minimum evidence count to consider
 #' @return A set of paths from src to each element of trgts
 #' @importFrom magrittr %>%
 #' @export
-dijkstra <- function( src, trgts, fscore=lpgm, max_nodes=100, min_ev=3 )
+dijkstra <- function( src, trgts, fscore=lpgm, blacklist=c(), max_nodes=100, min_ev=3 )
 {
     ## Argument verification
     if( src %in% trgts )
@@ -63,7 +64,7 @@ dijkstra <- function( src, trgts, fscore=lpgm, max_nodes=100, min_ev=3 )
     g <- src     ## Gene to expand next
     vxp <- c()   ## Vector of expanded node names
     P <- NULL    ## Path to each gene encountered so far
-    R <- NULL    ## Path to the current node of interest    
+    R <- NULL    ## Path to the current node of interest
     
     for( i in 1:max_nodes )
     {
@@ -88,7 +89,7 @@ dijkstra <- function( src, trgts, fscore=lpgm, max_nodes=100, min_ev=3 )
         ## Identify the next node to expand:
         ## - Exclude all nodes already expanded
         ## - Select a remaining node with the largest score
-        P1 <- P %>% dplyr::filter( !(Gene %in% vxp) ) %>%
+        P1 <- P %>% dplyr::filter( !(Gene %in% vxp), !(Gene %in% blacklist) ) %>%
             dplyr::arrange( desc(Score) ) %>% dplyr::top_n( 1, Score )
         g <- P1$Gene
         R <- P1$Path[[1]]

@@ -4,7 +4,8 @@
 \alias{dijkstra}
 \title{Dijkstra's algorithm for connecting a source to one or more targets}
 \usage{
-dijkstra(src, trgts, fscore = lpgm, max_nodes = 100, min_ev = 3)
+dijkstra(src, trgts, fscore = lpgm, blacklist = c(), max_nodes = 100,
+  min_ev = 3)
 }
 \arguments{
 \item{src}{Source gene}
@@ -12,6 +13,8 @@ dijkstra(src, trgts, fscore = lpgm, max_nodes = 100, min_ev = 3)
 \item{trgts}{Vector of target genes}
 
 \item{fscore}{Scoring function that accepts a vector of evidence counts}
+
+\item{blacklist}{Vector of genes that should NOT be expanded}
 
 \item{max_nodes}{Maximum number of nodes to expand (Default: 100)}
 
