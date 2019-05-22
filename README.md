@@ -86,3 +86,29 @@ IDBquery( object="KLF4" )
 # 10 -16399785507382445 DecreaseAmount    12 KLF4   KLF4 
 # # … with 611 more rows
 ```
+
+The package includes implementation of the Dijkstra's graph search algorithm for discovering paths between a source (e.g., a kinase) and downstream targets (e.g., transcription factors). The algorithm accepts an arbitrary path scoring function; by default, it uses `lpgm` (length-penalized geometric mean) provided with the package.
+
+``` R
+## Find paths from JAK2 to downstream Interferon TFs
+PW <- dijkstra( "JAK2", trgts=c("NFKB1", "STAT1", "STAT2", "STAT3", "IRF1", "IRF3") )
+# # A tibble: 7 x 3
+#   Gene  Path             Score
+#   <chr> <list>           <dbl>
+# 1 STAT3 <tibble [1 × 4]>  5.56
+# 2 STAT1 <tibble [1 × 4]>  4.56
+# 3 STAT2 <tibble [1 × 4]>  2.20
+# 4 NFKB1 <tibble [3 × 4]>  3.52
+# 5 IRF1  <tibble [3 × 4]>  3.15
+# 6 IRF3  <tibble [3 × 4]>  3.05
+   
+## Paths to individual targets can be retrieved from the Path column
+P <- with(PW, setNames(Path, Gene))
+P[["NFKB1"]]
+# # A tibble: 3 x 4
+#   Activity        EvCnt Src   Trgt 
+#   <chr>           <int> <chr> <chr>
+# 1 Phosphorylation   261 JAK2  STAT3
+# 2 Activation        329 STAT3 IL6  
+# 3 Activation         12 IL6   NFKB1
+```
