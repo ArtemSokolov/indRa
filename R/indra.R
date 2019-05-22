@@ -16,6 +16,12 @@ queryEdges <- function( indra_query )
     hgnc <- pyIndra$databases$hgnc_client
     iq <- reticulate::r_to_py( indra_query )
 
+    ## Handle degenerate case
+    if( length(iq$statements) < 1 )
+        return( tibble::tibble(Hash = character(), Activity = character(),
+                               EvCnt = character(), Src = character(),
+                               Trgt = character()) )
+    
     ## Retrieves HGNC ID of the i^th agent in statement s
     agentHGNC <- function( s, i )
     {

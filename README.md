@@ -24,11 +24,10 @@ devtools::install_github("ArtemSokolov/indRa")
 The INDRA module is exposed through `indra()` function. It allows for direct access to any part of the [INDRA API](https://indra.readthedocs.io/en/latest/).
 
 ``` R
-library( reticulate )
 library( indRa )
 
 ## If using virtualenv
-use_virtualenv( "/path/to/virtual/env", required=TRUE )
+reticulate::use_virtualenv( "/path/to/virtual/env", required=TRUE )
 
 ## Access to INDRA is available through indra() function
 indra()
