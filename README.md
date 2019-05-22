@@ -61,24 +61,24 @@ The package provides additional functionality for constructing and manipulating 
 ``` R
 IDBquery( "SIK3" )
 # # A tibble: 32 x 5
-#    Hash               Activity        EvCnt Src   Trgt  
-#    <chr>              <chr>           <int> <chr> <chr> 
-#  1 7430532589474606   Phosphorylation     9 SIK3  PER2  
-#  2 -21145377478765295 Phosphorylation     8 SIK3  HDAC4 
-#  3 -260602555584320   Inhibition          4 SIK3  CRTC2 
-#  4 12365252834703035  Activation          3 SIK3  STK11 
-#  5 22779893853211724  Activation          3 SIK3  SIK3  
+#   Hash               Activity        EvCnt Src   Trgt  
+#   <chr>              <chr>           <int> <chr> <chr> 
+# 1 7430532589474606   Phosphorylation     9 SIK3  PER2  
+# 2 -21145377478765295 Phosphorylation     8 SIK3  HDAC4 
+# 3 -260602555584320   Inhibition          4 SIK3  CRTC2 
+# 4 12365252834703035  Activation          3 SIK3  STK11 
+# 5 22779893853211724  Activation          3 SIK3  SIK3  
 # # … with 27 more rows
 
 IDBquery( object="KLF4" )
 # # A tibble: 621 x 5
-#    Hash               Activity       EvCnt Src    Trgt 
-#    <chr>              <chr>          <int> <chr>  <chr>
-#  1 34237034834082983  Activation        19 MIR145 KLF4 
-#  2 -1893896626253041  Acetylation       17 EP300  KLF4 
-#  3 -4171272971594532  IncreaseAmount    15 KLF4   KLF4 
-#  4 -2531422713809198  Activation        15 KLF4   KLF4 
-#  5 1490195882280611   Activation        15 STAT3  KLF4 
+#   Hash               Activity       EvCnt Src    Trgt 
+#   <chr>              <chr>          <int> <chr>  <chr>
+# 1 34237034834082983  Activation        19 MIR145 KLF4 
+# 2 -1893896626253041  Acetylation       17 EP300  KLF4 
+# 3 -4171272971594532  IncreaseAmount    15 KLF4   KLF4 
+# 4 -2531422713809198  Activation        15 KLF4   KLF4 
+# 5 1490195882280611   Activation        15 STAT3  KLF4 
 # # … with 616 more rows
 ```
 
