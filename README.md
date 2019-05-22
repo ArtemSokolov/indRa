@@ -108,7 +108,7 @@ P[["NFKB1"]]
 # 3 Activation         12 IL6   NFKB1
 ```
 
-The search can be guided through the `blacklist` argument, which controls specifies which set of nodes should NOT be expanded. This guarantees that the final paths will not go through the blacklisted nodes. Note that blacklisting one or more targets does not prevent the algorithm from finding a path to them:
+The search can be guided through the `blacklist` argument, which specifies which set of nodes should NOT be expanded. This guarantees that the final paths will not go through the blacklisted nodes. Note that blacklisting one or more targets does not prevent the algorithm from finding a path to them:
 
 ``` R
 ## STAT3 is both a target and blacklisted
