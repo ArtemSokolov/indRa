@@ -132,7 +132,7 @@ PW2$Path[[3]]
 
 ## Plotting discovered paths
 
-The paths discovered through the graph search algorithms above can be visualized using `plotPaths()`. The function accepts one or more Path data frames discovered by, e.g., `dijkstra()` and returns a ggplot object that can be further modified using the standard grammar of graphics. Following the JAK2 example above, we want to visualize the paths using our custom color scheme for the edges:
+The paths discovered through the graph search algorithms above can be visualized using `plotPaths()`. The function accepts one or more Path data frames discovered by, e.g., `dijkstra()` and returns a ggplot object that can be further modified using the standard grammar of graphics. Following the JAK2 example above, we may want to visualize the paths using our custom color scheme for the edges:
 
 ``` R
 plotPaths( PW$Path ) + ggthemes::scale_color_few()
