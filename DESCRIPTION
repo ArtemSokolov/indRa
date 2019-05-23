@@ -7,5 +7,8 @@ License: MIT
 Depends: R (>= 3.1.0)
 Imports:
     tidyverse,
-    reticulate
+    reticulate,
+    igraph,
+    ggnetwork,
+    intergraph
 RoxygenNote: 6.1.1
