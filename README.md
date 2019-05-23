@@ -138,4 +138,4 @@ The paths discovered through the graph search algorithms above can be visualized
 plotPaths( PW$Path ) + ggthemes::scale_color_few()
 ```
 
-![](docs/example1.png | width=640)
+![](docs/example1.png)
